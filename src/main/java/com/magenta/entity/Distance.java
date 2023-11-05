@@ -1,10 +1,8 @@
-package com.magenta.Entity;
+package com.magenta.entity;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "distance")
@@ -35,19 +33,16 @@ public class Distance {
     }
 
 
-
-
-
     public Distance(City city1, City city2) {
         this.fromCity = city1.getName();
         this.toCity = city2.getName();
         this.distanceBetween = calculateDistance(city1, city2);
     }
 
-    public Distance(City city1, City city2, Long[] ids, List<City> list, List<City> list2) {
+    public Distance(City city1, City city2, String[] names, List<City> list) {
         this.fromCity = city1.getName();
         this.toCity = city2.getName();
-        this.distanceBetween = calculateDistanceMatrix(city1, city2, ids, list, list2);
+        this.distanceBetween = calculateDistanceMatrix(city1, city2, names, list);
 
     }
 
@@ -80,12 +75,26 @@ public class Distance {
     }
 
 
-    public List<City> formCollection(Long[] ids, List<City> cities1,List<City> cities2) {
+//    public List<City> formCollection(Long[] ids, List<City> cities1,List<City> cities2) {
+//
+//        cities2.clear();
+//        for (int i = 0; i < ids.length; i++) {
+//            for (City city  : cities1) {
+//                if (city.getId() == ids[i]){
+//                    cities2.add(i,city);
+//                }
+//            }
+//        }
+//        return cities2;
+//    }
 
-        cities2.clear();
-        for (int i = 0; i < ids.length; i++) {
-            if (cities1.get(i).getId() == ids[i]){
-                cities2.add(cities1.get(i));
+    public List<City> findByName(List<City> cities1, String[] name) {
+        List<City> cities2 = new ArrayList<>();
+        for (int i = 0; i < name.length; i++) {
+            for (City city  : cities1) {
+                if (city.getName().equals(name[i])){
+                    cities2.add(i,city);
+                }
             }
         }
         return cities2;
@@ -235,25 +244,19 @@ public class Distance {
     }
 
 
-    public Double calculateDistanceMatrix(City city1, City city2, Long[] ids, List<City> list, List<City> list2) {
+    public Double calculateDistanceMatrix(City city1, City city2, String[] names, List<City> list) {
         List<City> cities;
-        cities = formCollection(ids, list, list2);
-        cities.remove(cities.get(0));
-        cities.remove(cities.get(0));
-        cities.add(0, city1);
+        cities = findByName(list,names);
         List<Double> distanceToOther = calculateFromStartToOther(cities);
 
 
         List<City> cities2;
-        cities2 = formCollection(ids, list, list2);
-        cities2.remove(cities2.get(0));
-        cities2.remove(cities2.get(0));
-        cities2.add(0, city2);
+        cities2 = findByName(list,names);
+
         List<Double> distanceFromOtherToSecond = calculateFromOtherToEnd(cities2);
 
-        List<City> city  = formCollection(ids,list,list2);
-        city.remove(city.get(0));
-        city.remove(city.get(0));
+        List<City> city  = findByName(list,names);
+
         List<Double> distanceBetweenOther = calculateBetweenOther(city);
 
 

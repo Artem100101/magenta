@@ -1,11 +1,11 @@
 package com.magenta.service;
 
-import com.magenta.Entity.City;
-import com.magenta.dto.CityResponse;
+import com.magenta.entity.City;
 import com.magenta.exception.CityNotFoundException;
 import org.springframework.stereotype.Service;
 import com.magenta.repository.CityRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +25,18 @@ public class CityService {
     public City getCityById(Long id){
         return cityRepository.findById(id)
                 .orElseThrow(() -> new CityNotFoundException("can`t find city with id: " + id));
+    }
+
+    public City getCityByName(String name){
+        List<City> allCities = new ArrayList<>();
+        List<City> allCities2 = new ArrayList<>();
+        allCities = cityRepository.findAll();
+        for (int i = 0; i < allCities.size(); i++) {
+            if (allCities.get(i).getName().equals(name)){
+                allCities2.add(0, allCities.get(i));
+            }
+        }
+        return allCities2.get(0);
     }
 
     public List<City> getAll(){

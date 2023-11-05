@@ -1,7 +1,7 @@
 package com.magenta.service;
 
-import com.magenta.Entity.City;
-import com.magenta.Entity.Distance;
+import com.magenta.entity.City;
+import com.magenta.entity.Distance;
 import com.magenta.dto.CityResponse;
 import com.magenta.exception.DistanceNotFoundException;
 import com.magenta.repository.DistanceRepository;
@@ -22,17 +22,17 @@ public class DistanceService {
         this.cityService = cityService1;
     }
 
-    public Long createDistanceCrowFlight(CityResponse city1, CityResponse city2) {
+    public Double createDistanceCrowFlight(CityResponse city1, CityResponse city2) {
         Distance distance = new Distance(city1, city2);
         distance.setMethod("CrowFlight");
-        return distanceRepository.save(distance).getId();
+        return distanceRepository.save(distance).getDistance();
     }
 
 
-    public Long createDistanceMatrix(City city1, City city2, Long[] ids, List<City> cities,List<City> cities2) {
-        Distance distance = new Distance(city1, city2, ids,cities,cities2);
+    public Double createDistanceMatrix(City city1, City city2, String[] names, List<City> cities) {
+        Distance distance = new Distance(city1, city2, names,cities);
         distance.setMethod("Matrix");
-        return distanceRepository.save(distance).getId();
+        return distanceRepository.save(distance).getDistance();
     }
 
     public Distance getDistanceById(Long id) {
@@ -44,6 +44,7 @@ public class DistanceService {
     public List<Distance> getAll() {
         return distanceRepository.findAll();
     }
+
 
 
 //

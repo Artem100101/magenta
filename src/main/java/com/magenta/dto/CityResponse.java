@@ -1,6 +1,6 @@
 package com.magenta.dto;
 
-import com.magenta.Entity.City;
+import com.magenta.entity.City;
 
 public class CityResponse extends City {
 

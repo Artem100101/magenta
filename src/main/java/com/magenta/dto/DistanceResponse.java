@@ -1,6 +1,6 @@
 package com.magenta.dto;
 
-import com.magenta.Entity.Distance;
+import com.magenta.entity.Distance;
 
 public class DistanceResponse {
 

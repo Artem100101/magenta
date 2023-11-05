@@ -1,9 +1,7 @@
 package com.magenta.controller;
 
-import com.magenta.Entity.City;
-import com.magenta.dto.CityRequest;
-import com.magenta.dto.CityResponse;
-import com.magenta.dto.DistanceResponse;
+import com.magenta.dto.*;
+import com.magenta.entity.City;
 import com.magenta.service.CityService;
 import com.magenta.service.DistanceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +40,11 @@ public class Controller {
     }
 
 
-    @PostMapping("/distances/Crowflight")
-    public Long createDistance(@RequestParam Long[] myParams){
-        CityResponse city1 = new CityResponse(cityService.getCityById(myParams[0]));
-        CityResponse city2 = new CityResponse(cityService.getCityById(myParams[1]));
+
+    @PostMapping("/distances/crowFlight")
+    public Double createDistance(@RequestParam String fromCity, String toCity){
+        CityResponse city1 = new CityResponse(cityService.getCityByName(fromCity));
+        CityResponse city2 = new CityResponse(cityService.getCityByName(toCity));
         return distanceService.createDistanceCrowFlight(city1, city2);
     }
 
@@ -60,14 +59,12 @@ public class Controller {
                 .collect(Collectors.toList());
     }
 
-    @PostMapping("/distances/all")
-    public Long testing(@RequestParam Long[] ids){
-        //СНАЧАЛА НАДО ВВЕСТИ ИНДЕКСЫ ГОРОДОВ ОТПРАВЛЕНИЯ И НАЗНАЧЕНИЯ!!!
-        CityResponse city1 = new CityResponse(cityService.getCityById(ids[0]));
-        CityResponse city2 = new CityResponse(cityService.getCityById(ids[1]));
+    @PostMapping("/distances/matrix")
+    public Double calculateMatrix(@RequestParam String fromCity,@RequestParam String toCity,@RequestParam String[] intermediateСities){
+        CityResponse city1 = new CityResponse(cityService.getCityByName(fromCity));
+        CityResponse city2 = new CityResponse(cityService.getCityByName(toCity));
         List<City> cities = cityService.getAll();
-        List<City> cities2 = cityService.getAll();
-        return distanceService.createDistanceMatrix(city1,city2, ids, cities, cities2);
+        return distanceService.createDistanceMatrix(city1,city2, intermediateСities, cities);
     }
 
 

@@ -1,4 +1,4 @@
-package com.magenta.Entity;
+package com.magenta.entity;
 
 import jakarta.persistence.*;
 
