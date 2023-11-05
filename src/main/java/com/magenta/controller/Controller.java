@@ -36,7 +36,7 @@ public class Controller {
     }
 
     @GetMapping("/cities")
-    //    С ПОМОЩЬЮ ДАННОГО ЗАПРОСА МОЖНО ПОЛУЧИТЬ СПИСОК ВСЕХ ГОРОДОВ И ТАБЛИЦЫ CITY
+    //    С ПОМОЩЬЮ ДАННОГО ЗАПРОСА МОЖНО ПОЛУЧИТЬ СПИСОК ВСЕХ ГОРОДОВ ИЗ ТАБЛИЦЫ CITY
     public List<CityResponse> getAllCities(){
         return cityService.getAll().stream().map(CityResponse::new)
                 .collect(Collectors.toList());
@@ -59,7 +59,7 @@ public class Controller {
     }
 
     @GetMapping("/distances")
-    //    С ПОМОЩЬЮ ДАННОГО ЗАПРОСА МОЖНО ПОЛУЧИТЬ СПИСОК ВСЕХ ДИСТАНЦИЙ И ТАБЛИЦЫ DISTANCE
+    //    С ПОМОЩЬЮ ДАННОГО ЗАПРОСА МОЖНО ПОЛУЧИТЬ СПИСОК ВСЕХ ДИСТАНЦИЙ ИЗ ТАБЛИЦЫ DISTANCE
     public List<DistanceResponse> getAll(){
         return distanceService.getAll().stream().map(DistanceResponse::new)
                 .collect(Collectors.toList());
