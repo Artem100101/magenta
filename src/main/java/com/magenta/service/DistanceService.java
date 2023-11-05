@@ -3,7 +3,6 @@ package com.magenta.service;
 import com.magenta.Entity.City;
 import com.magenta.Entity.Distance;
 import com.magenta.dto.CityResponse;
-import com.magenta.dto.DistanceResponse;
 import com.magenta.exception.DistanceNotFoundException;
 import com.magenta.repository.DistanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +14,12 @@ import java.util.List;
 public class DistanceService {
 
     private final DistanceRepository distanceRepository;
-//    private final CityService cityService;
+    private final CityService cityService;
 
     @Autowired
-    public DistanceService(DistanceRepository distanceRepository, CityService cityService) {
+    public DistanceService(DistanceRepository distanceRepository, CityService cityService, CityService cityService1) {
         this.distanceRepository = distanceRepository;
+        this.cityService = cityService1;
     }
 
     public Long createDistanceCrowFlight(CityResponse city1, CityResponse city2) {
@@ -27,6 +27,7 @@ public class DistanceService {
         distance.setMethod("CrowFlight");
         return distanceRepository.save(distance).getId();
     }
+
 
     public Long createDistanceMatrix(City city1, City city2, Long[] ids, List<City> cities,List<City> cities2) {
         Distance distance = new Distance(city1, city2, ids,cities,cities2);
@@ -45,7 +46,7 @@ public class DistanceService {
     }
 
 
-
+//
 //        public List<City> formCollection(Long[] ids) {
 //            List<City> dist = null;
 //            List<City> cities = null;
@@ -57,7 +58,7 @@ public class DistanceService {
 //            }
 //            return dist;
 //        }
-//
+
 //        public List<Double> calculateM(List<City> cities){
 //            List<Double> distance1 = null;
 //            for (int i = 1; i < cities.size(); i++) {

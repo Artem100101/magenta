@@ -1,9 +1,10 @@
 package com.magenta.Entity;
-
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "distance")
@@ -79,7 +80,6 @@ public class Distance {
     }
 
 
-
     public List<City> formCollection(Long[] ids, List<City> cities1,List<City> cities2) {
 
         cities2.clear();
@@ -128,54 +128,74 @@ public class Distance {
         return distance1;
     }
 
-    public Double[][] calculateBetweenOther(List<City> cities){
-        Double[] dis = new Double[cities.size()];
-        Double[][] dis2 = new Double[cities.size()][cities.size()];
+    public List<Double> calculateBetweenOther(List<City> cities){
+        List<Double> list = new ArrayList<>();
 
-        for (int i = 0; i < cities.size()-1; i++) {
+        Double[] dis = new Double[cities.size()];  //дистанция от первого города до всех остальных
+        Double[] dis2 = new Double[cities.size()];  //сумма дистанций первого города до всех остальных
+        double sum = 0;
 
-            for (int j = 1; j < cities.size(); j++) {
-                double bd = cities.get(i).getLatitude();
-                double bsh = cities.get(i).getLongitude();
-                double dd = cities.get(j).getLatitude();
-                double dsh = cities.get(j).getLongitude();
 
-                double gip = Math.abs(bd - dd) * 111.1;
-                double codd = Math.cos(Math.toRadians(dd));
-                double cobd = Math.cos(Math.toRadians(bd));
+        for (int i = 0; i < cities.size(); i++) {
+            for (int j = 0; j < cities.size(); j++) {
+                    double bd = cities.get(i).getLatitude();
+                    double bsh = cities.get(i).getLongitude();
+                    double dd = cities.get(j).getLatitude();
+                    double dsh = cities.get(j).getLongitude();
 
-                double up = 111.3 * codd;
-                double down = 111.3 * cobd;
+                    double gip = Math.abs(bd - dd) * 111.1;
+                    double codd = Math.cos(Math.toRadians(dd));
+                    double cobd = Math.cos(Math.toRadians(bd));
 
-                double ss = Math.abs(bsh - dsh);
-                double bc = ss * up;
-                double add = ss * down;
+                    double up = 111.3 * codd;
+                    double down = 111.3 * cobd;
 
-                double mal = Math.abs((bc - add) * 0.5);
-                double bh = Math.sqrt(Math.pow(gip, 2) - Math.pow(mal, 2));
-                double hd = add - mal;
-                double pom = Math.pow(bh, 2) + Math.pow(hd, 2);
-                double distance = Math.sqrt(pom);
-                dis[j-1] = distance;
-                dis2[i][j-1] = dis[j-1];
+                    double ss = Math.abs(bsh - dsh);
+                    double bc = ss * up;
+                    double add = ss * down;
+
+                    double mal = Math.abs((bc - add) * 0.5);
+                    double bh = Math.sqrt(Math.pow(gip, 2) - Math.pow(mal, 2));
+                    double hd = add - mal;
+                    double pom = Math.pow(bh, 2) + Math.pow(hd, 2);
+                    double distance = Math.sqrt(pom);
+                    dis[j] = distance;
+
             }
+            for (int j = 0; j < dis.length; j++) {
+                sum += dis[j];
+            }
+            dis2[i] = sum;
+            sum = 0;
+
         }
-        return dis2;
-    }
 
-    Double summary(List<Double> distanceToOther,List<Double> distanceFromOtherToSecond,Double[][] distanceFromOtherToOther){
+        for (int i = 0; i < dis2.length; i++) {
+            list.add(i,dis2[i]);
+        }
 
-//        Здесь
-//                могло
-//                бы
-//                        быть
-//                        ваше
-//                                решение :)
-//        на этом мои полномочия все(
+            return list;
+        }
 
-        double random = 0;
 
-        return random;
+    Double summary(List<Double> distanceToOther,List<Double> distanceFromOtherToSecond,List<Double> distanceBetweenOther){
+        List<Double> list = new ArrayList<>();
+        Double sum = Double.valueOf(0);
+
+        for (int i = 0; i < distanceToOther.size(); i++) {
+            sum = distanceToOther.get(i) + distanceFromOtherToSecond.get(i) + distanceBetweenOther.get(i);
+            list.add(i,sum);
+        }
+
+        Double min = list.get(0);
+
+        for (Double i: list) {
+            if(i < min)
+                min = i;
+
+        }
+
+        return min;
     }
 
     public List<Double> calculateFromOtherToEnd(List<City> cities){
@@ -234,9 +254,12 @@ public class Distance {
         List<City> city  = formCollection(ids,list,list2);
         city.remove(city.get(0));
         city.remove(city.get(0));
-        Double[][] distanceFromOtherToOther = calculateBetweenOther(city);
+        List<Double> distanceBetweenOther = calculateBetweenOther(city);
 
-        return summary(distanceToOther,distanceFromOtherToSecond, distanceFromOtherToOther);
+
+
+
+        return summary(distanceToOther,distanceFromOtherToSecond, distanceBetweenOther);
     }
 
 
