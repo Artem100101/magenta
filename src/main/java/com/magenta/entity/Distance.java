@@ -191,7 +191,7 @@ public class Distance {
         List<Double> list = new ArrayList<>();
         Double sum = Double.valueOf(0);
 
-        for (int i = 0; i < distanceToOther.size(); i++) {
+        for (int i = 0; i < distanceBetweenOther.size(); i++) {
             sum = distanceToOther.get(i) + distanceFromOtherToSecond.get(i) + distanceBetweenOther.get(i);
             list.add(i,sum);
         }
@@ -247,12 +247,13 @@ public class Distance {
     public Double calculateDistanceMatrix(City city1, City city2, String[] names, List<City> list) {
         List<City> cities;
         cities = findByName(list,names);
+        cities.add(0, city1);
         List<Double> distanceToOther = calculateFromStartToOther(cities);
 
 
         List<City> cities2;
         cities2 = findByName(list,names);
-
+        cities2.add(0,city2);
         List<Double> distanceFromOtherToSecond = calculateFromOtherToEnd(cities2);
 
         List<City> city  = findByName(list,names);
