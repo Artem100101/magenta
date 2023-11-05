@@ -23,14 +23,22 @@ public class Controller {
     }
 
     @PostMapping("/cities")
-//    С ПОМОЩЬЮ ДАННОГО ЗАПРОСА СОЗДАЕТСЯ ОБЪЕКТ В ТАБЛИЦЕ CITY
+    //    С ПОМОЩЬЮ ДАННОГО ЗАПРОСА СОЗДАЕТСЯ ОБЪЕКТ В ТАБЛИЦЕ CITY
+    //    ВХОДНЫЕ ПАРАМЕТРЫ ПЕРЕДАЮТСЯ С ПОМОЩЬЮ POSTMAN С ИСПОЛЬЗОВАНИЕМ МЕТОДА POST.
+    //    НЕОБХОДИМО НАЖАТЬ НА ВКЛАДКУ Body И ПЕРЕДАВАТЬ ПАРАМЕТРЫ В ФОРМАТЕ JSON СЛЕДУЮЩЕМ ВИДЕ
+    //    ПРИМЕР:
+    //    {
+    //    "name": "Samara",
+    //    "latitude" : 53.12,
+    //    "longitude": 50.06
+    //      }
     public int createCity(@RequestBody CityRequest cityRequest){
         return cityService.createCity(cityRequest.getName(),
                 cityRequest.getLatitude(), cityRequest.getLongitude());
     }
 
     @GetMapping("/cities/{id}")
-//    С ПОМОЩЬЮ ДАННОГО ЗАПРОСА МОЖНО ПОЛУЧИТЬ ПО ID КОНКРЕТНЫЙ ГОРОД
+    //    С ПОМОЩЬЮ ДАННОГО ЗАПРОСА МОЖНО ПОЛУЧИТЬ ПО ID КОНКРЕТНЫЙ ГОРОД
     public CityResponse getCity(@PathVariable Long id){
         return new CityResponse(cityService.getCityById(id));
     }
@@ -46,6 +54,14 @@ public class Controller {
 
     @PostMapping("/distances/crowFlight")
     //    С ПОМОЩЬЮ ДАННОГО ЗАПРОСА РАССЧИТЫВАЕТСЯ РАССТОЯНИЕ МЕЖДУ ГОРОДАМИ С ИСПОЛЬЗОВАНИЕМ МЕТОДА crowFlight
+    //    ВХОДНЫЕ ПАРАМЕТРЫ ПЕРЕДАЮТСЯ С ПОМОЩЬЮ POSTMAN С ИСПОЛЬЗОВАНИЕМ МЕТОДА POST.
+    //    НЕОБХОДИМО НАЖАТЬ НА ВКЛАДКУ PARAMS И ПЕРЕДАВАТЬ ПАРАМЕТРЫ В СЛЕДУЮЩЕМ ВИДЕ
+    //    ПРИМЕР:
+    //    Key                       Value
+    //    -----------------------------------
+    //    fromCity                  Samara
+    //    toCity                    Moscow
+    //    Затем нажимаем Send и получаем результат в виде дистанции в километрах
     public Double createDistance(@RequestParam String fromCity, String toCity){
         CityResponse city1 = new CityResponse(cityService.getCityByName(fromCity));
         CityResponse city2 = new CityResponse(cityService.getCityByName(toCity));
@@ -67,6 +83,16 @@ public class Controller {
 
     @PostMapping("/distances/matrix")
     //    С ПОМОЩЬЮ ДАННОГО ЗАПРОСА РАССЧИТЫВАЕТСЯ РАССТОЯНИЕ МЕЖДУ ГОРОДАМИ С ИСПОЛЬЗОВАНИЕМ МЕТОДА Matrix
+    //    ВХОДНЫЕ ПАРАМЕТРЫ ПЕРЕДАЮТСЯ С ПОМОЩЬЮ POSTMAN С ИСПОЛЬЗОВАНИЕМ МЕТОДА POST.
+    //    НЕОБХОДИМО НАЖАТЬ НА ВКЛАДКУ PARAMS И ПЕРЕДАВАТЬ ПАРАМЕТРЫ В СЛЕДУЮЩЕМ ВИДЕ
+    //    ПРИМЕР:
+    //    Key                       Value
+    //    -----------------------------------
+    //    fromCity                  Samara
+    //    toCity                    Moscow
+    //    intermediateСities        Saratov
+    //    intermediateСities        Saransk
+    //    И так далее, затем нажимаем Send и получаем результат в виде дистанции в километрах
     public Double calculateMatrix(@RequestParam String fromCity,@RequestParam String toCity,@RequestParam String[] intermediateСities){
         CityResponse city1 = new CityResponse(cityService.getCityByName(fromCity));
         CityResponse city2 = new CityResponse(cityService.getCityByName(toCity));
