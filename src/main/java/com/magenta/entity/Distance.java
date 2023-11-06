@@ -1,8 +1,7 @@
 package com.magenta.entity;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "distance")
@@ -36,7 +35,7 @@ public class Distance {
     public Distance(City city1, City city2) {
         this.fromCity = city1.getName();
         this.toCity = city2.getName();
-        this.distanceBetween = calculateDistance(city1, city2);
+        this.distanceBetween = crow(city1, city2);
     }
 
     public Distance(City city1, City city2, String[] names, List<City> list) {
@@ -47,46 +46,12 @@ public class Distance {
     }
 
 
-
-    public Double calculateDistance(City city1, City city2){
-        double bd = city1.getLatitude();
-        double bsh = city1.getLongitude();
-        double dd = city2.getLatitude();
-        double dsh = city2.getLongitude();
-
-        double gip = Math.abs(bd - dd) * 111.1;
-        double codd = Math.cos(Math.toRadians(dd));
-        double cobd = Math.cos(Math.toRadians(bd));
-
-        double up = 111.3 * codd;
-        double down = 111.3 * cobd;
-
-        double ss = Math.abs(bsh - dsh);
-        double bc = ss * up;
-        double add = ss * down;
-
-        double mal = Math.abs((bc - add)*0.5);
-        double bh =   Math.sqrt(Math.pow(gip,2) - Math.pow(mal,2));
-        double hd = add - mal;
-        double pom =  Math.pow(bh,2) +  Math.pow(hd, 2);
-        double distance = Math.sqrt(pom);
-
-        return distance;
+    public Double crow(City city, City city1){
+        double dist = org.apache.lucene.util.SloppyMath.haversinMeters(city.getLatitude()
+                , city.getLongitude(), city1.getLatitude(), city1.getLongitude());
+        return dist/1000;
     }
 
-
-//    public List<City> formCollection(Long[] ids, List<City> cities1,List<City> cities2) {
-//
-//        cities2.clear();
-//        for (int i = 0; i < ids.length; i++) {
-//            for (City city  : cities1) {
-//                if (city.getId() == ids[i]){
-//                    cities2.add(i,city);
-//                }
-//            }
-//        }
-//        return cities2;
-//    }
 
     public List<City> findByName(List<City> cities1, String[] name) {
         List<City> cities2 = new ArrayList<>();
@@ -106,28 +71,9 @@ public class Distance {
 
         Double[] dis = new Double[cities.size()];
         for (int i = 0; i < cities.size(); i++) {
-            double bd = cities.get(0).getLatitude();
-            double bsh = cities.get(0).getLongitude();
-            double dd = cities.get(i).getLatitude();
-            double dsh = cities.get(i).getLongitude();
-
-            double gip = Math.abs(bd - dd) * 111.1;
-            double codd = Math.cos(Math.toRadians(dd));
-            double cobd = Math.cos(Math.toRadians(bd));
-
-            double up = 111.3 * codd;
-            double down = 111.3 * cobd;
-
-            double ss = Math.abs(bsh - dsh);
-            double bc = ss * up;
-            double add = ss * down;
-
-            double mal = Math.abs((bc - add) * 0.5);
-            double bh = Math.sqrt(Math.pow(gip, 2) - Math.pow(mal, 2));
-            double hd = add - mal;
-            double pom = Math.pow(bh, 2) + Math.pow(hd, 2);
-            double distance = Math.sqrt(pom);
-            dis[i] = distance;
+            double distance = org.apache.lucene.util.SloppyMath.haversinMeters(cities.get(0).getLatitude()
+                    , cities.get(0).getLongitude(), cities.get(i).getLatitude(), cities.get(i).getLongitude());
+            dis[i] = distance/1000;
         }
 
         for (int i = 1; i < cities.size(); i++) {
@@ -137,62 +83,71 @@ public class Distance {
         return distance1;
     }
 
-    public List<Double> calculateBetweenOther(List<City> cities){
-        List<Double> list = new ArrayList<>();
+    public static int getFactorial(int f) {
+        int result = 1;
+        for (int i = 1; i <= f; i++) {
+            result = result * i;
+        }
+        return result;
+    }
 
-        Double[] dis = new Double[cities.size()];  //дистанция от первого города до всех остальных
-        Double[] dis2 = new Double[cities.size()];  //сумма дистанций первого города до всех остальных
-        double sum = 0;
+    public Double calculateBetweenOther(List<City> cities){
 
+        Double[] dis2 = new Double[cities.size() * 2];
+        int size = cities.size();
+        int variants = getFactorial(size);
+        Double[] dis = new Double[variants * 2];
+        int k = 0;
 
         for (int i = 0; i < cities.size(); i++) {
             for (int j = 0; j < cities.size(); j++) {
-                    double bd = cities.get(i).getLatitude();
-                    double bsh = cities.get(i).getLongitude();
-                    double dd = cities.get(j).getLatitude();
-                    double dsh = cities.get(j).getLongitude();
-
-                    double gip = Math.abs(bd - dd) * 111.1;
-                    double codd = Math.cos(Math.toRadians(dd));
-                    double cobd = Math.cos(Math.toRadians(bd));
-
-                    double up = 111.3 * codd;
-                    double down = 111.3 * cobd;
-
-                    double ss = Math.abs(bsh - dsh);
-                    double bc = ss * up;
-                    double add = ss * down;
-
-                    double mal = Math.abs((bc - add) * 0.5);
-                    double bh = Math.sqrt(Math.pow(gip, 2) - Math.pow(mal, 2));
-                    double hd = add - mal;
-                    double pom = Math.pow(bh, 2) + Math.pow(hd, 2);
-                    double distance = Math.sqrt(pom);
-                    dis[j] = distance;
+                double distance = org.apache.lucene.util.
+                        SloppyMath.haversinMeters(cities.get(i).getLatitude()
+                        , cities.get(i).getLongitude(), cities.get(j).getLatitude(),
+                                cities.get(j).getLongitude());
+                    dis[k] = distance/1000;
+                    k++;
 
             }
-            for (int j = 0; j < dis.length; j++) {
-                sum += dis[j];
-            }
-            dis2[i] = sum;
-            sum = 0;
+            dis2 = Arrays.copyOf(dis, dis.length);
 
         }
+        List<Double> list = new ArrayList<>();
 
         for (int i = 0; i < dis2.length; i++) {
-            list.add(i,dis2[i]);
-        }
-
-            return list;
+            list.add(i, dis2[i]);
         }
 
 
-    Double summary(List<Double> distanceToOther,List<Double> distanceFromOtherToSecond,List<Double> distanceBetweenOther){
+        Set<Double> setTo = new HashSet<>(list);
+        list.clear();
+        list.addAll(setTo);
+
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) == 0){
+                list.remove(list.get(i));
+            }
+        }
+
+        Double sum1 = Double.valueOf(0);
+
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) != null){
+                sum1 += list.get(i);
+            }
+
+        }
+        return sum1;
+        }
+
+
+    Double summary(List<Double> distanceToOther,List<Double> distanceFromOtherToSecond,Double distanceBetweenOther){
         List<Double> list = new ArrayList<>();
+
         Double sum = Double.valueOf(0);
 
-        for (int i = 0; i < distanceBetweenOther.size(); i++) {
-            sum = distanceToOther.get(i) + distanceFromOtherToSecond.get(i) + distanceBetweenOther.get(i);
+        for (int i = 0; i < distanceToOther.size(); i++) {
+            sum = distanceToOther.get(i) + distanceFromOtherToSecond.get(i) + distanceBetweenOther;
             list.add(i,sum);
         }
 
@@ -212,28 +167,9 @@ public class Distance {
 
         Double[] dis = new Double[cities.size()];
         for (int i = 1; i < cities.size(); i++) {
-            double bd = cities.get(i).getLatitude();
-            double bsh = cities.get(i).getLongitude();
-            double dd = cities.get(0).getLatitude();
-            double dsh = cities.get(0).getLongitude();
-
-            double gip = Math.abs(bd - dd) * 111.1;
-            double codd = Math.cos(Math.toRadians(dd));
-            double cobd = Math.cos(Math.toRadians(bd));
-
-            double up = 111.3 * codd;
-            double down = 111.3 * cobd;
-
-            double ss = Math.abs(bsh - dsh);
-            double bc = ss * up;
-            double add = ss * down;
-
-            double mal = Math.abs((bc - add) * 0.5);
-            double bh = Math.sqrt(Math.pow(gip, 2) - Math.pow(mal, 2));
-            double hd = add - mal;
-            double pom = Math.pow(bh, 2) + Math.pow(hd, 2);
-            double distance = Math.sqrt(pom);
-            dis[i] = distance;
+            double distance = org.apache.lucene.util.SloppyMath.haversinMeters(cities.get(i).getLatitude()
+                    , cities.get(i).getLongitude(), cities.get(0).getLatitude(), cities.get(0).getLongitude());
+            dis[i] = distance/1000;
         }
 
         for (int i = 1; i < cities.size(); i++) {
@@ -250,7 +186,6 @@ public class Distance {
         cities.add(0, city1);
         List<Double> distanceToOther = calculateFromStartToOther(cities);
 
-
         List<City> cities2;
         cities2 = findByName(list,names);
         cities2.add(0,city2);
@@ -258,16 +193,10 @@ public class Distance {
 
         List<City> city  = findByName(list,names);
 
-        List<Double> distanceBetweenOther = calculateBetweenOther(city);
-
-
-
+        Double distanceBetweenOther = calculateBetweenOther(city);
 
         return summary(distanceToOther,distanceFromOtherToSecond, distanceBetweenOther);
     }
-
-
-
 
     public Long getId() {
         return id;
