@@ -4,7 +4,7 @@ import com.magenta.entity.Distance;
 
 public class DistanceResponse {
 
-    private Long id;
+    private int id;
 
     private CityResponse city1;
 
@@ -17,7 +17,7 @@ public class DistanceResponse {
     private double distance;
 
 
-    public DistanceResponse(Long id) {
+    public DistanceResponse(int id) {
         this.id = id;
         this.fromCity = city1.getName();
         this.toCity = city2.getName();
@@ -59,11 +59,11 @@ public class DistanceResponse {
     }
 
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

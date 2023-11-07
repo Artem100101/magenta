@@ -1,4 +1,5 @@
 package com.magenta.entity;
+
 import jakarta.persistence.*;
 
 import java.util.*;
@@ -10,7 +11,7 @@ public class Distance {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private Long id;
+    private int id;
     @Column(name = "fromCity")
     private String fromCity;
     @Column(name = "toCity")
@@ -44,36 +45,33 @@ public class Distance {
         this.distanceBetween = calculateDistanceMatrix(city1, city2, names, list);
 
     }
-
-
-    public Double crow(City city, City city1){
+    public Double crow(City city, City city1) {
         double dist = org.apache.lucene.util.SloppyMath.haversinMeters(city.getLatitude()
                 , city.getLongitude(), city1.getLatitude(), city1.getLongitude());
-        return dist/1000;
+        return dist / 1000;
     }
 
 
     public List<City> findByName(List<City> cities1, String[] name) {
         List<City> cities2 = new ArrayList<>();
         for (int i = 0; i < name.length; i++) {
-            for (City city  : cities1) {
-                if (city.getName().equals(name[i])){
-                    cities2.add(i,city);
+            for (City city : cities1) {
+                if (city.getName().equals(name[i])) {
+                    cities2.add(i, city);
                 }
             }
         }
         return cities2;
     }
 
-
-    public List<Double> calculateFromStartToOther(List<City> cities){
+    public List<Double> calculateFromStartToOther(List<City> cities) {
         List<Double> distance1 = new ArrayList<>();
 
         Double[] dis = new Double[cities.size()];
         for (int i = 0; i < cities.size(); i++) {
             double distance = org.apache.lucene.util.SloppyMath.haversinMeters(cities.get(0).getLatitude()
                     , cities.get(0).getLongitude(), cities.get(i).getLatitude(), cities.get(i).getLongitude());
-            dis[i] = distance/1000;
+            dis[i] = distance / 1000;
         }
 
         for (int i = 1; i < cities.size(); i++) {
@@ -91,70 +89,109 @@ public class Distance {
         return result;
     }
 
-    public Double calculateBetweenOther(List<City> cities){
-
+    public Double calculateBetweenOther(List<City> cities) {
         Double[] dis2 = new Double[cities.size() * 2];
         int size = cities.size();
+        int sizeOfFirst = cities.size() - 1;
         int variants = getFactorial(size);
+        for (int i = 0; i < 1; i++) {
+
+        }
         Double[] dis = new Double[variants * 2];
+        Double[][] dis3 = new Double[variants * 2][variants * 2];
         int k = 0;
 
         for (int i = 0; i < cities.size(); i++) {
             for (int j = 0; j < cities.size(); j++) {
                 double distance = org.apache.lucene.util.
                         SloppyMath.haversinMeters(cities.get(i).getLatitude()
-                        , cities.get(i).getLongitude(), cities.get(j).getLatitude(),
+                                , cities.get(i).getLongitude(), cities.get(j).getLatitude(),
                                 cities.get(j).getLongitude());
-                    dis[k] = distance/1000;
+                if (distance / 1000 != 0) {
+                    dis[k] = distance / 1000;
                     k++;
+                }
+                dis3[i][j] = distance / 1000;
+
 
             }
             dis2 = Arrays.copyOf(dis, dis.length);
 
         }
+
+
         List<Double> list = new ArrayList<>();
-
         for (int i = 0; i < dis2.length; i++) {
-            list.add(i, dis2[i]);
+            if (dis2[i] != null) {
+                list.add(dis2[i]);
+            }
         }
-
 
         Set<Double> setTo = new HashSet<>(list);
         list.clear();
         list.addAll(setTo);
 
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) == 0){
-                list.remove(list.get(i));
+
+        List<Double> list1 = new ArrayList<>();
+
+        int kb = 0;
+
+        Double distance = Double.valueOf(0);
+        List<Double> disp = new ArrayList<>();
+//        for (int i = 0; i < variants; i++) {
+            for (int j = 0; j < cities.size(); j++) {
+                for (int l = 0; l < cities.size(); l++) {
+                    distance +=list.get(l);
+                }
+
+                distance = distance - list.get(j);
+                list1.add(distance);
+                distance = Double.valueOf(0);
+            }
+
+//        }
+        Set<Double> setTy = new HashSet<>(list1);
+        list1.clear();
+        list1.addAll(setTy);
+
+
+
+        Double min2 = list1.get(0);
+        for (Double aDouble : list1) {
+            if (aDouble < min2) {
+                min2 = aDouble;
             }
         }
 
-        Double sum1 = Double.valueOf(0);
+        return min2;
+    }
 
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) != null){
-                sum1 += list.get(i);
-            }
-
-        }
-        return sum1;
-        }
-
-
-    Double summary(List<Double> distanceToOther,List<Double> distanceFromOtherToSecond,Double distanceBetweenOther){
-        List<Double> list = new ArrayList<>();
-
+    public List<Double> calculateFromStartToSum(List<Double> list, Double minBetween) {
+        List<Double> distance1 = new ArrayList<>();
         Double sum = Double.valueOf(0);
 
-        for (int i = 0; i < distanceToOther.size(); i++) {
-            sum = distanceToOther.get(i) + distanceFromOtherToSecond.get(i) + distanceBetweenOther;
-            list.add(i,sum);
+        for (int i = 0; i < list.size(); i++) {
+            sum = list.get(i) + minBetween;
+            distance1.add(i, sum);
+            sum = Double.valueOf(0);
         }
 
-        Double min = list.get(0);
+        return distance1;
+    }
 
-        for (Double i: list) {
-            if(i < min)
+    public Double calculateFromStartToMin(List<Double> list, Double minBetween) {
+        List<Double> distance1 = new ArrayList<>();
+        Double razn = Double.valueOf(0);
+
+        for (int i = 0; i < list.size(); i++) {
+            razn = list.get(i) - minBetween;
+            distance1.add(i, razn);
+            razn = Double.valueOf(0);
+        }
+
+        Double min = distance1.get(0);
+        for (Double i : distance1) {
+            if (i < min)
                 min = i;
 
         }
@@ -162,14 +199,45 @@ public class Distance {
         return min;
     }
 
-    public List<Double> calculateFromOtherToEnd(List<City> cities){
+    public Double calculateLast(Double check, Double minBetween) {
+        Double sum = Double.valueOf(0);
+        sum = check + minBetween;
+
+        return sum;
+    }
+
+
+    Double summary(Double distanceToOther, List<Double> distanceFromOtherToSecond) {
+        List<Double> list = new ArrayList<>();
+
+        Double sum = Double.valueOf(0);
+
+        for (int i = 0; i < distanceFromOtherToSecond.size(); i++) {
+                sum = distanceToOther + distanceFromOtherToSecond.get(i);
+                list.add(i, sum);
+                sum = Double.valueOf(0);
+
+        }
+
+        Double min = list.get(0);
+        for (Double i : list) {
+            if (i < min)
+                min = i;
+
+        }
+
+        return min;
+    }
+
+
+    public List<Double> calculateFromOtherToEnd(List<City> cities) {
         List<Double> distance1 = new ArrayList<>();
 
         Double[] dis = new Double[cities.size()];
         for (int i = 1; i < cities.size(); i++) {
             double distance = org.apache.lucene.util.SloppyMath.haversinMeters(cities.get(i).getLatitude()
                     , cities.get(i).getLongitude(), cities.get(0).getLatitude(), cities.get(0).getLongitude());
-            dis[i] = distance/1000;
+            dis[i] = distance / 1000;
         }
 
         for (int i = 1; i < cities.size(); i++) {
@@ -181,28 +249,32 @@ public class Distance {
 
 
     public Double calculateDistanceMatrix(City city1, City city2, String[] names, List<City> list) {
-        List<City> cities;
-        cities = findByName(list,names);
-        cities.add(0, city1);
-        List<Double> distanceToOther = calculateFromStartToOther(cities);
-
-        List<City> cities2;
-        cities2 = findByName(list,names);
-        cities2.add(0,city2);
-        List<Double> distanceFromOtherToSecond = calculateFromOtherToEnd(cities2);
-
-        List<City> city  = findByName(list,names);
-
+        List<City> city = findByName(list, names);
         Double distanceBetweenOther = calculateBetweenOther(city);
 
-        return summary(distanceToOther,distanceFromOtherToSecond, distanceBetweenOther);
+        List<City> cities;
+        cities = findByName(list, names);
+        cities.add(0, city1);
+        List<Double> distanceToOther = calculateFromStartToOther(cities);
+        List<Double> distanceToOtherLast = calculateFromStartToSum(distanceToOther, distanceBetweenOther);
+        Double distanceToOtherLastMin = calculateFromStartToMin(distanceToOtherLast, distanceBetweenOther);
+        Double last = calculateLast(distanceToOtherLastMin, distanceBetweenOther);
+
+        List<City> cities2;
+        cities2 = findByName(list, names);
+        cities2.add(0, city2);
+        List<Double> distanceFromOtherToSecond = calculateFromOtherToEnd(cities2);
+
+        return summary(last, distanceFromOtherToSecond);
+
     }
 
-    public Long getId() {
+
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -210,8 +282,9 @@ public class Distance {
         return fromCity;
     }
 
-    public void setFromCity(String fromCity) {
+    public City setFromCity(String fromCity) {
         this.fromCity = fromCity;
+        return null;
     }
 
     public String getToCity() {

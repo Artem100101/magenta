@@ -62,7 +62,7 @@ public class Controller {
     //    fromCity                  Samara
     //    toCity                    Moscow
     //    Затем нажимаем Send и получаем результат в виде дистанции в километрах
-    public Double createDistance(@RequestParam String fromCity, String toCity){
+    public Double createDistanceCrow(@RequestParam String fromCity,@RequestParam String toCity){
         CityResponse city1 = new CityResponse(cityService.getCityByName(fromCity));
         CityResponse city2 = new CityResponse(cityService.getCityByName(toCity));
         return distanceService.createDistanceCrowFlight(city1, city2);

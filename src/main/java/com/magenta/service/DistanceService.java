@@ -8,6 +8,7 @@ import com.magenta.repository.DistanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,12 +29,13 @@ public class DistanceService {
         return distanceRepository.save(distance).getDistance();
     }
 
-
     public Double createDistanceMatrix(City city1, City city2, String[] names, List<City> cities) {
         Distance distance = new Distance(city1, city2, names,cities);
         distance.setMethod("Matrix");
         return distanceRepository.save(distance).getDistance();
     }
+
+
 
     public Distance getDistanceById(Long id) {
         return distanceRepository.findById(id)
@@ -45,4 +47,5 @@ public class DistanceService {
         return distanceRepository.findAll();
     }
 
-    }
+
+}

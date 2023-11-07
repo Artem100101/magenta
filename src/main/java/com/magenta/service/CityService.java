@@ -39,6 +39,7 @@ public class CityService {
         return allCities2.get(0);
     }
 
+
     public List<City> getAll(){
         return cityRepository.findAll();
     }
